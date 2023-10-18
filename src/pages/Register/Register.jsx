@@ -50,6 +50,7 @@ export const Register = () => {
 			.then((data) => {
 				if (data.status == 201) {
 					navigate('/');
+					window.location.reload();
 					localStorage.setItem('token', data.token);
 					localStorage.setItem('user_id', data.user[0].user_id);
 				}
