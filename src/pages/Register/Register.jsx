@@ -25,11 +25,6 @@ export const Register = () => {
 			return;
 		}
 
-		if (!userEmailValue.endsWith('@gmail.com')) {
-			alert('Invalid E-mail');
-			return;
-		}
-
 		if (userPasswordValue != userRePasswordValue) {
 			alert('Different passwords');
 			return;
