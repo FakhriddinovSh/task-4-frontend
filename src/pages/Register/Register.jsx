@@ -9,7 +9,7 @@ export const Register = () => {
 	const rePasswordValue = useRef();
 	const navigate = useNavigate();
 
-	const handleSubmit = (evt) => {
+	const handleSubmit = async (evt) => {
 		evt.preventDefault();
 
 		const userNameValue = nameValue.current.value;
@@ -30,27 +30,49 @@ export const Register = () => {
 			return;
 		}
 
-		fetch(`${BASE_URL}/register`, {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify({
-				username: userNameValue,
-				email: userEmailValue,
-				password: userPasswordValue,
-			}),
-		})
+		await fetch(`${BASE_URL}/users`)
 			.then((res) => res.json())
 			.then((data) => {
-				if (data.status == 201) {
-					navigate('/');
-					window.location.reload();
-					localStorage.setItem('token', data.token);
-					localStorage.setItem('user_id', data.user[0].user_id);
+				const findName = data.find(
+					(item) =>
+						item.username.toLowerCase() ==
+						userNameValue.toLowerCase(),
+				);
+
+				const findEmail = data.find(
+					(item) => item.email == userEmailValue,
+				);
+
+				if (find || findEmail) {
+					alert('This user already registered');
+					return;
+				} else {
+					fetch(`${BASE_URL}/register`, {
+						method: 'POST',
+						headers: {
+							'Content-Type': 'application/json',
+						},
+						body: JSON.stringify({
+							username: userNameValue,
+							email: userEmailValue,
+							password: userPasswordValue,
+						}),
+					})
+						.then((res) => res.json())
+						.then((data) => {
+							if (data.status == 201) {
+								navigate('/');
+								window.location.reload();
+								localStorage.setItem('token', data.token);
+								localStorage.setItem(
+									'user_id',
+									data.user[0].user_id,
+								);
+							}
+						})
+						.catch((err) => console.log(err.message));
 				}
-			})
-			.catch((err) => console.log(err.message));
+			});
 	};
 
 	return (
